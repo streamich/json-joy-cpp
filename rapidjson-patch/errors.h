@@ -4,14 +4,15 @@
 namespace rapidjson_patch {
     enum Error {
         NoError = 0,
-        NotAnObject = 1,
-        NotAnOperation = 2,
-        UnknownOperation = 3,
+        OperationNotAnObject = 1,
+        OperationNotAnOperation = 2,
+        OperationUnknown = 3,
         OperationMissingPath = 4,
         OperationInvalidPath = 5,
         OperationMissingFrom = 6,
         OperationInvalidFrom = 7,
-        MissingValue = 8,
+        OperationMissingValue = 8,
+        PatchNotAnArray = 9,
     };
 }
 

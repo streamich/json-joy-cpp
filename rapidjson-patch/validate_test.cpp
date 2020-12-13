@@ -27,7 +27,7 @@ TEST(ValidateAdd, ReturnsErrorOnMissingValue) {
     rapidjson::Document doc;
     doc.Parse(json);
     auto result = rapidjson_patch::validateOperation(doc);
-    ASSERT_EQ(result, rapidjson_patch::Error::MissingValue);
+    ASSERT_EQ(result, rapidjson_patch::Error::OperationMissingValue);
 }
 
 TEST(ValidateAdd, ReturnsErrorOnInvalidPath) {
@@ -51,7 +51,7 @@ TEST(ValidateAdd, ReturnsErrorOnUnknownOperation) {
     rapidjson::Document doc;
     doc.Parse(json);
     auto result = rapidjson_patch::validateOperation(doc);
-    ASSERT_EQ(result, rapidjson_patch::Error::UnknownOperation);
+    ASSERT_EQ(result, rapidjson_patch::Error::OperationUnknown);
 }
 
 TEST(ValidateAdd, ReturnsErrorOnInvalidOperationMnemonic) {
@@ -59,7 +59,7 @@ TEST(ValidateAdd, ReturnsErrorOnInvalidOperationMnemonic) {
     rapidjson::Document doc;
     doc.Parse(json);
     auto result = rapidjson_patch::validateOperation(doc);
-    ASSERT_EQ(result, rapidjson_patch::Error::UnknownOperation);
+    ASSERT_EQ(result, rapidjson_patch::Error::OperationUnknown);
 }
 
 TEST(ValidateAdd, ReturnsErrorOnMissingOperationMnemonic) {
@@ -67,7 +67,7 @@ TEST(ValidateAdd, ReturnsErrorOnMissingOperationMnemonic) {
     rapidjson::Document doc;
     doc.Parse(json);
     auto result = rapidjson_patch::validateOperation(doc);
-    ASSERT_EQ(result, rapidjson_patch::Error::NotAnOperation);
+    ASSERT_EQ(result, rapidjson_patch::Error::OperationNotAnOperation);
 }
 
 TEST(ValidateReplace, ReturnsZeroOnValidOperation) {
@@ -94,7 +94,7 @@ TEST(ValidateReplace, ReturnsErrorOnMissingValue) {
     rapidjson::Document doc;
     doc.Parse(json);
     auto result = rapidjson_patch::validateOperation(doc);
-    ASSERT_EQ(result, rapidjson_patch::Error::MissingValue);
+    ASSERT_EQ(result, rapidjson_patch::Error::OperationMissingValue);
 }
 
 TEST(ValidateReplace, ReturnsErrorOnInvalidPath) {
@@ -118,7 +118,7 @@ TEST(ValidateReplace, ReturnsErrorOnMissingOperationMnemonic) {
     rapidjson::Document doc;
     doc.Parse(json);
     auto result = rapidjson_patch::validateOperation(doc);
-    ASSERT_EQ(result, rapidjson_patch::Error::NotAnOperation);
+    ASSERT_EQ(result, rapidjson_patch::Error::OperationNotAnOperation);
 }
 
 TEST(ValidateTest, ReturnsZeroOnValidOperation) {
@@ -145,7 +145,7 @@ TEST(ValidateTest, ReturnsErrorOnMissingValue) {
     rapidjson::Document doc;
     doc.Parse(json);
     auto result = rapidjson_patch::validateOperation(doc);
-    ASSERT_EQ(result, rapidjson_patch::Error::MissingValue);
+    ASSERT_EQ(result, rapidjson_patch::Error::OperationMissingValue);
 }
 
 TEST(ValidateTest, ReturnsErrorOnInvalidPath) {
@@ -169,7 +169,7 @@ TEST(ValidateTest, ReturnsErrorOnMissingOperationMnemonic) {
     rapidjson::Document doc;
     doc.Parse(json);
     auto result = rapidjson_patch::validateOperation(doc);
-    ASSERT_EQ(result, rapidjson_patch::Error::NotAnOperation);
+    ASSERT_EQ(result, rapidjson_patch::Error::OperationNotAnOperation);
 }
 
 TEST(ValidateRemove, ReturnsZeroOnValidOperation) {
@@ -209,7 +209,7 @@ TEST(ValidateRemove, ReturnsErrorOnUnknownOperation) {
     rapidjson::Document doc;
     doc.Parse(json);
     auto result = rapidjson_patch::validateOperation(doc);
-    ASSERT_EQ(result, rapidjson_patch::Error::UnknownOperation);
+    ASSERT_EQ(result, rapidjson_patch::Error::OperationUnknown);
 }
 
 TEST(ValidateRemove, ReturnsErrorOnInvalidOperationMnemonic) {
@@ -217,7 +217,7 @@ TEST(ValidateRemove, ReturnsErrorOnInvalidOperationMnemonic) {
     rapidjson::Document doc;
     doc.Parse(json);
     auto result = rapidjson_patch::validateOperation(doc);
-    ASSERT_EQ(result, rapidjson_patch::Error::UnknownOperation);
+    ASSERT_EQ(result, rapidjson_patch::Error::OperationUnknown);
 }
 
 TEST(ValidateRemove, ReturnsErrorOnMissingOperationMnemonic) {
@@ -225,7 +225,7 @@ TEST(ValidateRemove, ReturnsErrorOnMissingOperationMnemonic) {
     rapidjson::Document doc;
     doc.Parse(json);
     auto result = rapidjson_patch::validateOperation(doc);
-    ASSERT_EQ(result, rapidjson_patch::Error::NotAnOperation);
+    ASSERT_EQ(result, rapidjson_patch::Error::OperationNotAnOperation);
 }
 
 TEST(ValidateMove, ReturnsZeroOnValidOperation) {
@@ -322,6 +322,27 @@ TEST(ValidateCopy, ReturnsErrorOnMissingFrom) {
     doc.Parse(json);
     auto result = rapidjson_patch::validateOperation(doc);
     ASSERT_EQ(result, rapidjson_patch::Error::OperationMissingFrom);
+}
+
+TEST(ValidatePatch, ReturnsZeroOnValidPatch) {
+    const char* json1 = "[{\"op\":\"add\",\"path\":\"\",\"value\":null}]";
+    const char* json2 = "[{\"op\":\"add\",\"path\":\"/foo/bar\",\"value\":123},{\"op\":\"add\",\"path\":\"/\",\"value\":\"foobar\"},{\"op\":\"add\",\"path\":\"\",\"value\":{}}]";
+
+    rapidjson::Document d1, d2;
+    d1.Parse(json1);
+    d2.Parse(json2);
+
+    ASSERT_EQ(rapidjson_patch::Error::NoError, 0);
+    ASSERT_EQ(rapidjson_patch::validatePatch(d1), 0);
+    ASSERT_EQ(rapidjson_patch::validatePatch(d2), 0);
+}
+
+TEST(ValidatePatch, ReturnsErrorOnMissingValueInAddOperation) {
+    const char* json = "[{\"op\":\"add\",\"path\":\"\"}]";
+    rapidjson::Document doc;
+    doc.Parse(json);
+    auto result = rapidjson_patch::validatePatch(doc);
+    ASSERT_EQ(result, rapidjson_patch::Error::OperationMissingValue);
 }
 
 int main(int argc, char **argv) {
