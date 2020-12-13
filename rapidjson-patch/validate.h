@@ -20,6 +20,7 @@ namespace rapidjson_patch {
         rapidjson::Value::ConstMemberIterator itr = obj.FindMember("op");
         if (itr == obj.MemberEnd()) return Error::NotAnOperation;
         if (obj["op"] == "add") return validateOperationAdd(obj);
+        if (obj["op"] == "replace") return validateOperationAdd(obj);
         return Error::UnknownOperation;
     }
 }
