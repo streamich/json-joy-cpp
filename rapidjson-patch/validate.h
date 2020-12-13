@@ -7,9 +7,10 @@
 namespace rapidjson_patch {
     Error validateOperationAdd(rapidjson::GenericObject<false, rapidjson::Value>& obj) {
         rapidjson::Value::ConstMemberIterator itr = obj.FindMember("path");
-        if (itr == obj.MemberEnd()) return Error::OperationMissingPath;
+        auto end = obj.MemberEnd();
+        if (itr == end) return Error::OperationMissingPath;
         if (!itr->value.IsString()) return Error::OperationInvalidPath;
-        if (obj.FindMember("value") == obj.MemberEnd()) return Error::MissingValue;
+        if (obj.FindMember("value") == end) return Error::MissingValue;
         return Error::NoError;
     }
 
