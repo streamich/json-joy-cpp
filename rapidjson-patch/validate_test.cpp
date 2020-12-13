@@ -137,6 +137,62 @@ TEST(ValidateReplace, ReturnsErrorOnMissingOperationMnemonic) {
     ASSERT_EQ(result, rapidjson_patch::Error::NotAnOperation);
 }
 
+TEST(ValidateRemove, ReturnsZeroOnValidOperation) {
+    const char* json1 = "{\"op\":\"remove\",\"path\":\"\"}";
+    const char* json2 = "{\"op\":\"remove\",\"path\":\"/foo/bar\",\"value\":123}";
+    const char* json3 = "{\"op\":\"remove\",\"path\":\"/\",\"value\":\"foobar\"}";
+
+    rapidjson::Document d1, d2, d3;
+    d1.Parse(json1);
+    d2.Parse(json2);
+    d3.Parse(json3);
+
+    ASSERT_EQ(rapidjson_patch::Error::NoError, 0);
+    ASSERT_EQ(rapidjson_patch::validateOperation(d1), 0);
+    ASSERT_EQ(rapidjson_patch::validateOperation(d2), 0);
+    ASSERT_EQ(rapidjson_patch::validateOperation(d3), 0);
+}
+
+TEST(ValidateRemove, ReturnsErrorOnInvalidPath) {
+    const char* json = "{\"op\":\"remove\",\"path\":123,\"value\":{}}";
+    rapidjson::Document doc;
+    doc.Parse(json);
+    auto result = rapidjson_patch::validateOperation(doc);
+    ASSERT_EQ(result, rapidjson_patch::Error::OperationInvalidPath);
+}
+
+TEST(ValidateRemove, ReturnsErrorOnMissingPath) {
+    const char* json = "{\"op\":\"remove\",\"value\":{}}";
+    rapidjson::Document doc;
+    doc.Parse(json);
+    auto result = rapidjson_patch::validateOperation(doc);
+    ASSERT_EQ(result, rapidjson_patch::Error::OperationMissingPath);
+}
+
+TEST(ValidateRemove, ReturnsErrorOnUnknownOperation) {
+    const char* json = "{\"op\":\"FOOBAR\",\"path\":\"/\",\"value\":\"foobar\"}";
+    rapidjson::Document doc;
+    doc.Parse(json);
+    auto result = rapidjson_patch::validateOperation(doc);
+    ASSERT_EQ(result, rapidjson_patch::Error::UnknownOperation);
+}
+
+TEST(ValidateRemove, ReturnsErrorOnInvalidOperationMnemonic) {
+    const char* json = "{\"op\":123,\"path\":\"/\",\"value\":\"foobar\"}";
+    rapidjson::Document doc;
+    doc.Parse(json);
+    auto result = rapidjson_patch::validateOperation(doc);
+    ASSERT_EQ(result, rapidjson_patch::Error::UnknownOperation);
+}
+
+TEST(ValidateRemove, ReturnsErrorOnMissingOperationMnemonic) {
+    const char* json = "{\"OP\":\"remove\",\"path\":\"/\",\"value\":\"foobar\"}";
+    rapidjson::Document doc;
+    doc.Parse(json);
+    auto result = rapidjson_patch::validateOperation(doc);
+    ASSERT_EQ(result, rapidjson_patch::Error::NotAnOperation);
+}
+
 int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

@@ -14,6 +14,14 @@ namespace rapidjson_patch {
         return Error::NoError;
     }
 
+    Error validateOperationRemove(rapidjson::GenericObject<false, rapidjson::Value>& obj) {
+        rapidjson::Value::ConstMemberIterator itr = obj.FindMember("path");
+        auto end = obj.MemberEnd();
+        if (itr == end) return Error::OperationMissingPath;
+        if (!itr->value.IsString()) return Error::OperationInvalidPath;
+        return Error::NoError;
+    }
+
     Error validateOperation(rapidjson::Value& doc) {
         if (!doc.IsObject()) return Error::NotAnObject;
         auto obj = doc.GetObject();
@@ -21,6 +29,7 @@ namespace rapidjson_patch {
         if (itr == obj.MemberEnd()) return Error::NotAnOperation;
         if (obj["op"] == "add") return validateOperationAdd(obj);
         if (obj["op"] == "replace") return validateOperationAdd(obj);
+        if (obj["op"] == "remove") return validateOperationRemove(obj);
         return Error::UnknownOperation;
     }
 }
