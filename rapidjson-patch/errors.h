@@ -1,3 +1,6 @@
+#ifndef RAPIDJSON_PATCH_ERRORS_H_
+#define RAPIDJSON_PATCH_ERRORS_H_
+
 namespace rapidjson_patch {
     enum Error {
         NoError = 0,
@@ -9,3 +12,5 @@ namespace rapidjson_patch {
         MissingValue = 6,
     };
 }
+
+#endif

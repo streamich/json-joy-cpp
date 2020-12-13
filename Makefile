@@ -13,7 +13,7 @@ main: rapidjson-patch/main.cpp rapidjson-patch/*.h
 	$(CXX) -flto -O3 $(CXXFLAGS) rapidjson-patch/main.cpp -o main $(LDFLAGS)
 
 .PHONY: validate_test
-validate_test:
+validate_test: rapidjson-patch/validate_test.cpp rapidjson-patch/*.h
 	mkdir -p build; \
 	$(CXX) -o build/validate_test rapidjson-patch/validate_test.cpp $(CXXFLAGS) -Iexternal/gtest/googletest/include ./external/gtest/build/lib/*.a; \
 	./build/validate_test

@@ -14,7 +14,7 @@ namespace rapidjson_patch {
         return Error::NoError;
     }
 
-    Error validateOperation(rapidjson::Document& doc) {
+    Error validateOperation(rapidjson::Value& doc) {
         if (!doc.IsObject()) return Error::NotAnObject;
         auto obj = doc.GetObject();
         rapidjson::Value::ConstMemberIterator itr = obj.FindMember("op");
