@@ -1,5 +1,5 @@
 namespace rapidjson_patch {
-    enum JsonPatchError {
+    enum Error {
         NoError = 0,
         NotAnObject = 1,
         NotAnOperation = 2,

@@ -5,20 +5,20 @@
 #include "errors.h"
 
 namespace rapidjson_patch {
-    JsonPatchError validateOperationAdd(rapidjson::GenericObject<false, rapidjson::Value>& obj) {
+    Error validateOperationAdd(rapidjson::GenericObject<false, rapidjson::Value>& obj) {
         rapidjson::Value::ConstMemberIterator itr = obj.FindMember("path");
-        if (itr == obj.MemberEnd()) return JsonPatchError::OperationMissingPath;
-        if (!itr->value.IsString()) return JsonPatchError::OperationInvalidPath;
-        if (obj.FindMember("value") == obj.MemberEnd()) return JsonPatchError::MissingValue;
-        return JsonPatchError::NoError;
+        if (itr == obj.MemberEnd()) return Error::OperationMissingPath;
+        if (!itr->value.IsString()) return Error::OperationInvalidPath;
+        if (obj.FindMember("value") == obj.MemberEnd()) return Error::MissingValue;
+        return Error::NoError;
     }
 
-    JsonPatchError validateOperation(rapidjson::Document& doc) {
-        if (!doc.IsObject()) return JsonPatchError::NotAnObject;
+    Error validateOperation(rapidjson::Document& doc) {
+        if (!doc.IsObject()) return Error::NotAnObject;
         auto obj = doc.GetObject();
         rapidjson::Value::ConstMemberIterator itr = obj.FindMember("op");
-        if (itr == obj.MemberEnd()) return JsonPatchError::NotAnOperation;
+        if (itr == obj.MemberEnd()) return Error::NotAnOperation;
         if (obj["op"] == "add") return validateOperationAdd(obj);
-        return JsonPatchError::UnknownOperation;
+        return Error::UnknownOperation;
     }
 }
