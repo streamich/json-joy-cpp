@@ -113,24 +113,59 @@ TEST(ValidateReplace, ReturnsErrorOnMissingPath) {
     ASSERT_EQ(result, rapidjson_patch::Error::OperationMissingPath);
 }
 
-TEST(ValidateReplace, ReturnsErrorOnUnknownOperation) {
-    const char* json = "{\"op\":\"FOOBAR\",\"path\":\"/\",\"value\":\"foobar\"}";
-    rapidjson::Document doc;
-    doc.Parse(json);
-    auto result = rapidjson_patch::validateOperation(doc);
-    ASSERT_EQ(result, rapidjson_patch::Error::UnknownOperation);
-}
-
-TEST(ValidateReplace, ReturnsErrorOnInvalidOperationMnemonic) {
-    const char* json = "{\"op\":123,\"path\":\"/\",\"value\":\"foobar\"}";
-    rapidjson::Document doc;
-    doc.Parse(json);
-    auto result = rapidjson_patch::validateOperation(doc);
-    ASSERT_EQ(result, rapidjson_patch::Error::UnknownOperation);
-}
-
 TEST(ValidateReplace, ReturnsErrorOnMissingOperationMnemonic) {
     const char* json = "{\"OP\":\"replace\",\"path\":\"/\",\"value\":\"foobar\"}";
+    rapidjson::Document doc;
+    doc.Parse(json);
+    auto result = rapidjson_patch::validateOperation(doc);
+    ASSERT_EQ(result, rapidjson_patch::Error::NotAnOperation);
+}
+
+TEST(ValidateTest, ReturnsZeroOnValidOperation) {
+    const char* json1 = "{\"op\":\"test\",\"path\":\"\",\"value\":null}";
+    const char* json2 = "{\"op\":\"test\",\"path\":\"/foo/bar\",\"value\":123}";
+    const char* json3 = "{\"op\":\"test\",\"path\":\"/\",\"value\":\"foobar\"}";
+    const char* json4 = "{\"op\":\"test\",\"path\":\"\",\"value\":{}}";
+
+    rapidjson::Document d1, d2, d3, d4;
+    d1.Parse(json1);
+    d2.Parse(json2);
+    d3.Parse(json3);
+    d4.Parse(json4);
+
+    ASSERT_EQ(rapidjson_patch::Error::NoError, 0);
+    ASSERT_EQ(rapidjson_patch::validateOperation(d1), 0);
+    ASSERT_EQ(rapidjson_patch::validateOperation(d2), 0);
+    ASSERT_EQ(rapidjson_patch::validateOperation(d3), 0);
+    ASSERT_EQ(rapidjson_patch::validateOperation(d4), 0);
+}
+
+TEST(ValidateTest, ReturnsErrorOnMissingValue) {
+    const char* json = "{\"op\":\"test\",\"path\":\"\"}";
+    rapidjson::Document doc;
+    doc.Parse(json);
+    auto result = rapidjson_patch::validateOperation(doc);
+    ASSERT_EQ(result, rapidjson_patch::Error::MissingValue);
+}
+
+TEST(ValidateTest, ReturnsErrorOnInvalidPath) {
+    const char* json = "{\"op\":\"test\",\"path\":123,\"value\":{}}";
+    rapidjson::Document doc;
+    doc.Parse(json);
+    auto result = rapidjson_patch::validateOperation(doc);
+    ASSERT_EQ(result, rapidjson_patch::Error::OperationInvalidPath);
+}
+
+TEST(ValidateTest, ReturnsErrorOnMissingPath) {
+    const char* json = "{\"op\":\"test\",\"value\":{}}";
+    rapidjson::Document doc;
+    doc.Parse(json);
+    auto result = rapidjson_patch::validateOperation(doc);
+    ASSERT_EQ(result, rapidjson_patch::Error::OperationMissingPath);
+}
+
+TEST(ValidateTest, ReturnsErrorOnMissingOperationMnemonic) {
+    const char* json = "{\"OP\":\"test\",\"path\":\"/\",\"value\":\"foobar\"}";
     rapidjson::Document doc;
     doc.Parse(json);
     auto result = rapidjson_patch::validateOperation(doc);
