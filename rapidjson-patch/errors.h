@@ -9,7 +9,9 @@ namespace rapidjson_patch {
         UnknownOperation = 3,
         OperationMissingPath = 4,
         OperationInvalidPath = 5,
-        MissingValue = 6,
+        OperationMissingFrom = 6,
+        OperationInvalidFrom = 7,
+        MissingValue = 8,
     };
 }
 
