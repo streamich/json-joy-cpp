@@ -241,6 +241,54 @@ TEST(ValidateMove, ReturnsErrorOnMissingFrom) {
     ASSERT_EQ(result, rapidjson_patch::Error::OperationMissingFrom);
 }
 
+TEST(ValidateCopy, ReturnsZeroOnValidOperation) {
+    const char* json1 = "{\"op\":\"copy\",\"path\":\"\",\"from\":\"\"}";
+    const char* json2 = "{\"op\":\"copy\",\"path\":\"/foo/bar\",\"from\":\"/\"}";
+    const char* json3 = "{\"op\":\"copy\",\"path\":\"/\",\"value\":\"foobar\",\"from\":\"/foo/bar\"}";
+
+    rapidjson::Document d1, d2, d3;
+    d1.Parse(json1);
+    d2.Parse(json2);
+    d3.Parse(json3);
+
+    ASSERT_EQ(rapidjson_patch::Error::NoError, 0);
+    ASSERT_EQ(rapidjson_patch::validateOperation(d1), 0);
+    ASSERT_EQ(rapidjson_patch::validateOperation(d2), 0);
+    ASSERT_EQ(rapidjson_patch::validateOperation(d3), 0);
+}
+
+TEST(ValidateCopy, ReturnsErrorOnInvalidPath) {
+    const char* json = "{\"op\":\"copy\",\"path\":123,\"from\":\"/\"}";
+    rapidjson::Document doc;
+    doc.Parse(json);
+    auto result = rapidjson_patch::validateOperation(doc);
+    ASSERT_EQ(result, rapidjson_patch::Error::OperationInvalidPath);
+}
+
+TEST(ValidateCopy, ReturnsErrorOnMissingPath) {
+    const char* json = "{\"op\":\"copy\",\"from\":\"/\"}";
+    rapidjson::Document doc;
+    doc.Parse(json);
+    auto result = rapidjson_patch::validateOperation(doc);
+    ASSERT_EQ(result, rapidjson_patch::Error::OperationMissingPath);
+}
+
+TEST(ValidateCopy, ReturnsErrorOnInvalidFrom) {
+    const char* json = "{\"op\":\"copy\",\"path\":\"/foo/bar\",\"from\":{}}";
+    rapidjson::Document doc;
+    doc.Parse(json);
+    auto result = rapidjson_patch::validateOperation(doc);
+    ASSERT_EQ(result, rapidjson_patch::Error::OperationInvalidFrom);
+}
+
+TEST(ValidateCopy, ReturnsErrorOnMissingFrom) {
+    const char* json = "{\"op\":\"copy\",\"path\":\"/foo/bar\"}";
+    rapidjson::Document doc;
+    doc.Parse(json);
+    auto result = rapidjson_patch::validateOperation(doc);
+    ASSERT_EQ(result, rapidjson_patch::Error::OperationMissingFrom);
+}
+
 int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

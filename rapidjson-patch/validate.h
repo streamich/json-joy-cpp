@@ -42,6 +42,7 @@ namespace rapidjson_patch {
         if (obj["op"] == "replace") return validateOperationAdd(obj);
         if (obj["op"] == "remove") return validateOperationRemove(obj);
         if (obj["op"] == "move") return validateOperationMove(obj);
+        if (obj["op"] == "copy") return validateOperationMove(obj);
         return Error::UnknownOperation;
     }
 }
